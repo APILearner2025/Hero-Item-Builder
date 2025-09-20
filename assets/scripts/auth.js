@@ -11,9 +11,7 @@ async function getAccessToken() {
       "Content-Type": "application/x-www-form-urlencoded",
       Authorization: basicAuth,
     },
-    body: new URLSearchParams({
-      grant_type: "client_credentials",
-    }).toString(),
+    body: new URLSearchParams({ grant_type: "client_credentials" }).toString(),
   });
 
   if (!response.ok) {

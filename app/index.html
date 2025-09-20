@@ -4,16 +4,82 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>My Website</title>
+    <title>Landing Page</title>
     <link rel="stylesheet" href="../assets/style/style.css" />
     <link rel="icon" href="../assets/img/favicon.ico" type="image/x-icon" />
+    <style>
+      .heroes-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+      .hero-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100px;
+        text-align: center;
+        text-decoration: none;
+        color: inherit;
+      }
+      .hero-card img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+    </style>
   </head>
   <body>
     <main>
-      <h1>Landing Page of Omeda City Testing grounds</h1>
-      <div class="red">Tester123</div>
-      <a href="..\app\builder\index.html">go to builder</a>
+      <h1>Landing Page</h1>
+      <a href="../app/builder/index.html">go to builder</a>
+      <div class="heroes-container" id="heroesContainer"></div>
     </main>
-    <script src="assets\scripts\auth.js"></script>
+
+    <script src="../assets/scripts/utility.js"></script>
+    <script src="../assets/scripts/auth.js"></script>
+    <script src="../assets/scripts/api.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        try {
+          const token = await getAccessToken();
+          const query = `query heroes {
+            heroes {
+              id
+              data {
+                displayName
+                icon
+              }
+              slug
+            }
+          }`;
+          const variables = {};
+          const data = await fetchGraphQL(query, variables, token);
+
+          const container = document.getElementById("heroesContainer");
+
+          data.heroes.forEach((hero) => {
+            const link = document.createElement("a");
+            link.href = `https://pred.gg/heroes/${hero.slug}`;
+            link.className = "hero-card";
+            link.target = "_blank";
+
+            const img = document.createElement("img");
+            img.src = getAssetPath(hero.data.icon);
+            img.alt = hero.data.displayName;
+
+            const name = document.createElement("span");
+            name.textContent = hero.data.displayName;
+
+            link.appendChild(img);
+            link.appendChild(name);
+            container.appendChild(link);
+          });
+        } catch (err) {
+          console.error("Error:", err);
+        }
+      });
+    </script>
   </body>
 </html>
